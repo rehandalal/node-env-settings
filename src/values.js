@@ -2,6 +2,12 @@ import * as process from 'process';
 
 export class ValueError extends Error {}
 
+/**
+ * A mixin for simple type casting of values.
+ *
+ * @param {class} superclass  The class to be extended.
+ * @returns {class}  The extended class.
+ */
 export const CastingMixin = superclass => class extends superclass {
   convert(value) {
     // This should be overridden when subclassing.
@@ -16,6 +22,7 @@ export const CastingMixin = superclass => class extends superclass {
     }
   }
 }
+
 
 export class Value {
   constructor(defaultsTo, options = {}) {
@@ -34,10 +41,12 @@ export class Value {
     const { envName } = this.options;
 
     if (envName === undefined) {
-      throw new ValueError(`Unable to resolve envName.`)
+      throw new ValueError('Unable to resolve envName.')
+    } else if (envName !== envName.toUpperCase()) {
+      throw new ValueError(`${envName}: envName must be uppercase.`)
     }
 
-    const envValue = process.env[envName.toUpperCase()];
+    const envValue = process.env[envName];
     const value = envValue === undefined ? this.defaultsTo : envValue;
 
     try {

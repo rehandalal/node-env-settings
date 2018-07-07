@@ -1,10 +1,11 @@
 {
   "name": "env-settings",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Multi-environment configuration made simple",
   "main": "dist/index.js",
   "scripts": {
-    "build": "yarn gulp"
+    "build": "gulp",
+    "test": "yarn run build && mocha ./tests/**/*.test.js --require babel-core/register"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,8 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-preset-stage-0": "^6.24.1",
     "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.1"
+    "gulp-babel": "^7.0.1",
+    "mocha": "^5.2.0",
+    "proxyquire": "^2.0.1"
   }
 }
