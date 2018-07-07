@@ -19,7 +19,7 @@ before_install:
 install:
 - yarn install
 script:
-- therpist run --use-tracked-files
+- therapist run --use-tracked-files
 - yarn test
 deploy:
   provider: npm
