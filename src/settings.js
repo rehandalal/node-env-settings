@@ -20,7 +20,7 @@ export default class Settings {
             if (err instanceof ValueError) {
               throw err;
             } else {
-              console.warn(err.message);
+              console.warn(err.message); // eslint-disable-line no-console
             }
           }
         } else {

@@ -21,8 +21,7 @@ export const CastingMixin = superclass => class extends superclass {
       throw new ValueError('Cannot interpret value.');
     }
   }
-}
-
+};
 
 export class Value {
   constructor(defaultsTo, options = {}) {
@@ -34,16 +33,16 @@ export class Value {
     this.options = {
       ...options,
       ...this.options,
-    }
+    };
   }
 
   value() {
     const { envName } = this.options;
 
     if (envName === undefined) {
-      throw new ValueError('Unable to resolve envName.')
+      throw new ValueError('Unable to resolve envName.');
     } else if (envName !== envName.toUpperCase()) {
-      throw new ValueError(`${envName}: envName must be uppercase.`)
+      throw new ValueError(`${envName}: envName must be uppercase.`);
     }
 
     const envValue = process.env[envName];

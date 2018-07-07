@@ -1,0 +1,5 @@
+actions:
+  eslint:
+    run: yarn -s eslint --max-warnings 0 {files}
+    include:
+      - "*.js"

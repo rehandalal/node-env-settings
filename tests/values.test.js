@@ -46,8 +46,6 @@ describe('Value', () => {
   });
 
   describe('.value()', () => {
-    const restoreEnv = process.env;
-
     function newValue(envName, defaultsTo) {
       const v = new values.Value(defaultsTo, { envName });
       return v;
