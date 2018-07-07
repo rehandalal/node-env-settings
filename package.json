@@ -1,0 +1,29 @@
+{
+  "name": "env-settings",
+  "version": "1.0.0",
+  "description": "Multi-environment configuration made simple",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "yarn gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rehandalal/node-env-settings.git"
+  },
+  "keywords": [
+    "settings"
+  ],
+  "author": "Rehan Dalal",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/rehandalal/node-env-settings/issues"
+  },
+  "homepage": "https://github.com/rehandalal/node-env-settings#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-preset-stage-0": "^6.24.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1"
+  }
+}
