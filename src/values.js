@@ -36,26 +36,47 @@ export class Value {
     };
   }
 
-  value() {
-    const { envName } = this.options;
+  get defaultsTo() {
+    return this._defaultsTo;
+  }
 
-    if (envName === undefined) {
-      throw new ValueError('Unable to resolve envName.');
-    } else if (envName !== envName.toUpperCase()) {
-      throw new ValueError(`${envName}: envName must be uppercase.`);
+  set defaultsTo(value) {
+    this.validateDefault(value);
+    this._defaultsTo = value;
+  }
+
+  get value() {
+    if (!this._value) {
+      const { envName } = this.options;
+
+      if (envName === undefined) {
+        throw new ValueError('Unable to resolve envName.');
+      } else if (envName !== envName.toUpperCase()) {
+        throw new ValueError(`${envName}: envName must be uppercase.`);
+      }
+
+      const envValue = process.env[envName];
+
+      if (envValue === undefined) {
+        this._value = this.defaultsTo;
+      } else {
+        try {
+          const parsedValue = this.toJS(envValue);
+          this._value = parsedValue;
+        } catch (err) {
+          throw new ValueError(`${envName}: ${err.message}`);
+        }
+      }
     }
-
-    const envValue = process.env[envName];
-    const value = envValue === undefined ? this.defaultsTo : envValue;
-
-    try {
-      return this.toJS(value);
-    } catch (err) {
-      throw new ValueError(`${envName}: ${err.message}`);
-    }
+    return this._value;
   }
 
   toJS(value) {
+    // This should be overridden when subclassing.
+    return value;
+  }
+
+  validateDefault(value) {
     // This should be overridden when subclassing.
     return value;
   }
@@ -64,6 +85,12 @@ export class Value {
 export class BooleanValue extends Value {
   static trueValues = ['true', 'yes', 'y', '1'];
   static falseValues = ['false', 'no', 'n', '0', ''];
+
+  validateDefault(value) {
+    if (![true, false].includes(value)) {
+      throw new ValueError('Default value must be a boolean.');
+    }
+  }
 
   toJS(value) {
     const normalized = value.toLowerCase();
