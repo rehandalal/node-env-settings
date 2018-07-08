@@ -6,6 +6,7 @@
  * @returns {boolean}
  */
 export function isPlainObject(obj) {
+  /* istanbul ignore next */
   if (typeof obj === 'object' && obj !== null) {
     // If Object.getPrototypeOf supported, use it
     if (typeof Object.getPrototypeOf === 'function') {
@@ -13,7 +14,6 @@ export function isPlainObject(obj) {
       return proto === Object.prototype || proto === null;
     }
 
-    /* istanbul ignore next */
     // Otherwise, use the internal class name
     return Object.prototype.toString.call(obj) === '[object Object]';
   }
