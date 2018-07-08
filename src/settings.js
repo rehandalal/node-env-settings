@@ -26,7 +26,7 @@ export default class Settings {
         } else {
           return cachedValue;
         }
-      }
+      },
     });
 
     return this.proxy;
