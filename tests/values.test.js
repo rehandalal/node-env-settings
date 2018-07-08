@@ -19,7 +19,7 @@ const stubEnv = {
 const values = proxyquire('../dist/values', {
   process: {
     env: stubEnv,
-  }
+  },
 });
 
 describe('Value', () => {
