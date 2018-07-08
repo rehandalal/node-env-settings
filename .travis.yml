@@ -15,9 +15,12 @@ before_install:
 - sudo apt-get -y install python3-pip python-dev
 - sudo pip3 install --upgrade setuptools
 - sudo pip3 install therapist
+- npm install -g coveralls
 - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
 install:
 - yarn install
+after_success:
+- yarn run coverage
 script:
 - therapist run --use-tracked-files
 - yarn test

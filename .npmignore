@@ -1,4 +1,5 @@
 .idea
 .npmrc
+.nyc-output/
 yarn.lock*
 yarn-error.log*

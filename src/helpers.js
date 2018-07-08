@@ -13,6 +13,7 @@ export function isPlainObject(obj) {
       return proto === Object.prototype || proto === null;
     }
 
+    /* istanbul ignore next */
     // Otherwise, use the internal class name
     return Object.prototype.toString.call(obj) === '[object Object]';
   }

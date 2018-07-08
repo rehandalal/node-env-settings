@@ -106,12 +106,25 @@ export class BooleanValue extends Value {
 }
 
 export class IntegerValue extends CastingMixin(Value) {
+  validateDefault(value) {
+    if (value !== undefined && !Number.isInteger(value)) {
+      throw new ValueError('Default value must be an integer.');
+    }
+  }
+
   convert(value) {
     return parseInt(value, 10);
   }
 }
 
 export class PositiveIntegerValue extends IntegerValue {
+  validateDefault(value) {
+    super.validateDefault(value);
+    if (value < 0) {
+      throw new ValueError('Default value must be >= 0.');
+    }
+  }
+
   toJS(value) {
     const intValue = super.toJS(value);
     if (intValue < 0) {
