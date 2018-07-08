@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-import { isPlainObject } from '../dist/helpers';
+import { isPlainObject } from '../src/helpers';
 
 describe('helpers.test.js', () => {
   describe('isPlainObject()', () => {

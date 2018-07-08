@@ -2,27 +2,6 @@ import * as process from 'process';
 
 export class ValueError extends Error {}
 
-/**
- * A mixin for simple type casting of values.
- *
- * @param {class} superclass  The class to be extended.
- * @returns {class}  The extended class.
- */
-export const CastingMixin = superclass => class extends superclass {
-  convert(value) {
-    // This should be overridden when subclassing.
-    return value;
-  }
-
-  toJS(value) {
-    try {
-      return this.convert(value);
-    } catch (err) {
-      throw new ValueError('Cannot interpret value.');
-    }
-  }
-};
-
 export class Value {
   constructor(defaultsTo, options = {}) {
     this.defaultsTo = defaultsTo;
@@ -105,15 +84,19 @@ export class BooleanValue extends Value {
   }
 }
 
-export class IntegerValue extends CastingMixin(Value) {
+export class IntegerValue extends Value {
   validateDefault(value) {
     if (value !== undefined && !Number.isInteger(value)) {
       throw new ValueError('Default value must be an integer.');
     }
   }
 
-  convert(value) {
-    return parseInt(value, 10);
+  toJS(value) {
+    const converted = parseInt(value, 10);
+    if (Number.isNaN(converted)) {
+      throw new ValueError('Cannot interpret value.');
+    }
+    return converted;
   }
 }
 
@@ -134,8 +117,18 @@ export class PositiveIntegerValue extends IntegerValue {
   }
 }
 
-export class FloatValue extends CastingMixin(Value) {
-  convert(value) {
-    return parseFloat(value);
+export class FloatValue extends Value {
+  validateDefault(value) {
+    if (value !== undefined && !(typeof value === 'number' && Number.isFinite(value))) {
+      throw new ValueError('Default value must be a finite number.');
+    }
+  }
+
+  toJS(value) {
+    const converted = parseFloat(value);
+    if (Number.isNaN(converted)) {
+      throw new ValueError('Cannot interpret value.');
+    }
+    return converted;
   }
 }

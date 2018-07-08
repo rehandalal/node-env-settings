@@ -3,9 +3,9 @@ const proxyquire = require('proxyquire');
 
 const stubEnv = {
   STRING: 'Test',
-  INT: '2',
+  INT: '23',
   NEGATIVE_INT: '-1',
-  FLOAT: '3.27',
+  FLOAT: '32.33',
   YES: 'yes',
   Y: 'Y',
   ONE: '1',
@@ -16,7 +16,7 @@ const stubEnv = {
   FALSE: 'FALSE',
 };
 
-const values = proxyquire('../dist/values', {
+const values = proxyquire('../src/values', {
   process: {
     env: stubEnv,
   },
@@ -141,7 +141,7 @@ describe('values.test.js', () => {
         assert.throws(
           () => v.value,
           values.ValueError,
-          'Cannot interpret boolean value',
+          'Cannot interpret boolean value.',
         );
       });
 
@@ -155,6 +155,152 @@ describe('values.test.js', () => {
   describe('IntegerValue', () => {
     it('works', () => {
       new values.IntegerValue();
+      new values.IntegerValue(2);
+      new values.IntegerValue(-5);
+    });
+
+    it('errors on invalid default value', () => {
+      assert.throws(
+        () => new values.IntegerValue('1'),
+        values.ValueError,
+        'Default value must be an integer.',
+      );
+
+      assert.throws(
+        () => new values.IntegerValue(1.5),
+        values.ValueError,
+        'Default value must be an integer.',
+      );
+    });
+
+    describe('.value', () => {
+      function newValue(envName, defaultsTo) {
+        const v = new values.IntegerValue(defaultsTo, {envName});
+        return v;
+      }
+
+      it('works for numeric strings', () => {
+        let v = newValue('INT');
+        assert.deepStrictEqual(v.value, 23);
+
+        v = newValue('FLOAT');
+        assert.deepStrictEqual(v.value, 32);
+      });
+
+      it('errors on non-numeric strings', () => {
+        const v = newValue('STRING');
+        assert.throws(
+          () => v.value,
+          values.ValueError,
+          'Cannot interpret value.'
+        );
+      });
+
+      it('returns the default correctly', () => {
+        const v = newValue('DOES_NOT_EXIST', 12);
+        assert.deepStrictEqual(v.value, 12);
+      });
+    });
+  });
+
+  describe('PositiveIntegerValue', () => {
+    it('works', () => {
+      new values.PositiveIntegerValue();
+      new values.PositiveIntegerValue(2);
+    });
+
+    it('errors on invalid default value', () => {
+      assert.throws(
+        () => new values.PositiveIntegerValue(-10),
+        values.ValueError,
+        'Default value must be a positive integer.',
+      );
+    });
+
+    describe('.value', () => {
+      function newValue(envName, defaultsTo) {
+        const v = new values.PositiveIntegerValue(defaultsTo, {envName});
+        return v;
+      }
+
+      it('works for positive numeric strings', () => {
+        let v = newValue('INT');
+        assert.deepStrictEqual(v.value, 23);
+
+        v = newValue('FLOAT');
+        assert.deepStrictEqual(v.value, 32);
+      });
+
+      it('errors on negative numeric strings', () => {
+        const v = newValue('NEGATIVE_INT');
+        assert.throws(
+          () => v.value,
+          values.ValueError,
+          'Cannot interpret value.'
+        );
+      });
+
+      it('returns the default correctly', () => {
+        const v = newValue('DOES_NOT_EXIST', 12);
+        assert.deepStrictEqual(v.value, 12);
+      });
+    });
+  });
+
+  describe('FloatValue', () => {
+    it('works', () => {
+      new values.FloatValue();
+      new values.FloatValue(1);
+      new values.FloatValue(1.5);
+    });
+
+    it('errors on invalid default value', () => {
+      assert.throws(
+        () => new values.FloatValue(1/0),
+        values.ValueError,
+        'Default value must be a finite number.',
+      );
+
+      assert.throws(
+        () => new values.FloatValue(NaN),
+        values.ValueError,
+        'Default value must be a finite number.',
+      );
+
+      assert.throws(
+        () => new values.FloatValue('1'),
+        values.ValueError,
+        'Default value must be a finite number.',
+      );
+    });
+
+    describe('.value', () => {
+      function newValue(envName, defaultsTo) {
+        const v = new values.FloatValue(defaultsTo, {envName});
+        return v;
+      }
+
+      it('works for numeric strings', () => {
+        let v = newValue('INT');
+        assert.deepStrictEqual(v.value, 23);
+
+        v = newValue('FLOAT');
+        assert.deepStrictEqual(v.value, 32.33);
+      });
+
+      it('errors on non-numeric strings', () => {
+        const v = newValue('STRING');
+        assert.throws(
+          () => v.value,
+          values.ValueError,
+          'Cannot interpret value.'
+        );
+      });
+
+      it('returns the default correctly', () => {
+        const v = newValue('DOES_NOT_EXIST', 12.2);
+        assert.deepStrictEqual(v.value, 12.2);
+      });
     });
   });
 });
