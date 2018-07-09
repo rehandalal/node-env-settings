@@ -68,10 +68,20 @@ describe('settings.test.js', () => {
       Settings.prefix = '';
     });
 
+    it('works for dynamic walues with envName, envPrefix and Settings.prefix specified', () => {
+      Settings.prefix = 'FOO';
+      const s = new Settings({
+        STRING: new values.Value(null, { envName: 'VALUE', envPrefix: 'PREFIXED' }),
+      });
+
+      assert.deepStrictEqual(s, { STRING: 'Prefixed' });
+      Settings.prefix = '';
+    });
+
     it('works for function values that self-reference', () => {
       const s = new Settings({
         STRING: new values.Value(),
-        EVALUATED() { 
+        EVALUATED() {
           return `${this.STRING} works!`;
         },
       });

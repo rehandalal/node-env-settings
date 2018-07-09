@@ -44,8 +44,8 @@ export class Value {
   }
 
   get fullEnvName() {
-    const {envName} = this.options;
-    let {envPrefix = ''} = this.options;
+    const { envName } = this.options;
+    let { envPrefix = '' } = this.options;
 
     if (envName === undefined) {
       throw new Error('Unable to resolve envName.');
