@@ -1,5 +1,7 @@
 .idea
+.node-version
 .npmrc
-.nyc-output/
+.nyc_output/
+*.tgz
 yarn.lock*
 yarn-error.log*
