@@ -2,7 +2,7 @@ import { isPlainObject } from './helpers';
 import { Value } from './values';
 
 export default class Settings {
-  static prefix = '';
+  static prefix;
 
   constructor(settings) {
     this.cache = new Map();
