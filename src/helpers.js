@@ -20,3 +20,15 @@ export function isPlainObject(obj) {
 
   return false;
 }
+
+/**
+ * Validates that the passed string is all uppercase.
+ *
+ * @param str  The string to be validated
+ * @param name  Name of the variable that the string is being assigned to.
+ */
+export function validateUpperCase(str, name) {
+  if (typeof str === 'string' && str !== str.toUpperCase()) {
+    throw new Error(`${name} must be uppercase.`);
+  }
+}

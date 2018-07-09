@@ -6,7 +6,7 @@
   "scripts": {
     "build": "gulp",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test": "yarn -s run build && nyc mocha ./tests/**/*.test.js --require babel-core/register"
+    "test": "yarn -s run build && nyc --exclude tests/ mocha ./tests/**/*.test.js --require babel-core/register"
   },
   "repository": {
     "type": "git",

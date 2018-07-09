@@ -20,7 +20,7 @@ before_install:
 install:
 - yarn install
 after_success:
-- yarn run coverage
+- yarn coverage
 script:
 - therapist run --use-tracked-files
 - yarn test

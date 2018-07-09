@@ -1,18 +1,37 @@
 import * as process from 'process';
 
+import { validateUpperCase } from './helpers';
+
 export class ValueError extends Error {}
 
 export class Value {
   constructor(defaultsTo, options = {}) {
-    this.defaultsTo = defaultsTo;
-    this.options = options;
-  }
+    const _options = { ...options };
+    const _privateOptions = {};
 
-  setEmptyOptions(options) {
-    this.options = {
-      ...options,
-      ...this.options,
-    };
+    // Set up uppercase validation on some options
+    ['envName', 'envPrefix'].forEach(key => {
+      Object.defineProperty(_options, key, {
+        get: () => {
+          return _privateOptions[key];
+        },
+        set: (value) => {
+          validateUpperCase(value, key);
+          _privateOptions[key] = value;
+        },
+      });
+      if (Object.keys(options).includes(key)) {
+        _options[key] = options[key];
+      }
+    });
+
+    Object.defineProperty(this, 'options', {
+      get: () => {
+        return _options;
+      },
+    });
+
+    this.defaultsTo = defaultsTo;
   }
 
   get defaultsTo() {
@@ -20,21 +39,29 @@ export class Value {
   }
 
   set defaultsTo(value) {
-    this.validateDefault(value);
+    this.validateDefaultsTo(value);
     this._defaultsTo = value;
+  }
+
+  get fullEnvName() {
+    const {envName} = this.options;
+    let {envPrefix = ''} = this.options;
+
+    if (envName === undefined) {
+      throw new Error('Unable to resolve envName.');
+    }
+
+    if (envPrefix && !envPrefix.endsWith('_')) {
+      envPrefix += '_';
+    }
+
+    return `${envPrefix}${envName}`;
   }
 
   get value() {
     if (!this._value) {
       const { envName } = this.options;
-
-      if (envName === undefined) {
-        throw new ValueError('Unable to resolve envName.');
-      } else if (envName !== envName.toUpperCase()) {
-        throw new ValueError(`${envName}: envName must be uppercase.`);
-      }
-
-      const envValue = process.env[envName];
+      const envValue = process.env[this.fullEnvName];
 
       if (envValue === undefined) {
         this._value = this.defaultsTo;
@@ -55,9 +82,9 @@ export class Value {
     return value;
   }
 
-  validateDefault(value) {
+  /* eslint-disable-next-line no-unused-vars */
+  validateDefaultsTo(value) {
     // This should be overridden when subclassing.
-    return value;
   }
 }
 
@@ -65,7 +92,7 @@ export class BooleanValue extends Value {
   static trueValues = ['true', 'yes', 'y', '1'];
   static falseValues = ['false', 'no', 'n', '0', ''];
 
-  validateDefault(value) {
+  validateDefaultsTo(value) {
     if (![true, false].includes(value)) {
       throw new ValueError('Default value must be a boolean.');
     }
@@ -85,7 +112,7 @@ export class BooleanValue extends Value {
 }
 
 export class IntegerValue extends Value {
-  validateDefault(value) {
+  validateDefaultsTo(value) {
     if (value !== undefined && !Number.isInteger(value)) {
       throw new ValueError('Default value must be an integer.');
     }
@@ -101,8 +128,8 @@ export class IntegerValue extends Value {
 }
 
 export class PositiveIntegerValue extends IntegerValue {
-  validateDefault(value) {
-    super.validateDefault(value);
+  validateDefaultsTo(value) {
+    super.validateDefaultsTo(value);
     if (value < 0) {
       throw new ValueError('Default value must be >= 0.');
     }
@@ -118,7 +145,7 @@ export class PositiveIntegerValue extends IntegerValue {
 }
 
 export class FloatValue extends Value {
-  validateDefault(value) {
+  validateDefaultsTo(value) {
     if (value !== undefined && !(typeof value === 'number' && Number.isFinite(value))) {
       throw new ValueError('Default value must be a finite number.');
     }
@@ -132,3 +159,7 @@ export class FloatValue extends Value {
     return converted;
   }
 }
+
+export {
+  process,
+};

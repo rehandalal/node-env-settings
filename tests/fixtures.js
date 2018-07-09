@@ -1,0 +1,15 @@
+export const stubbedEnv = {
+  STRING: 'Test',
+  INT: '23',
+  NEGATIVE_INT: '-1',
+  FLOAT: '32.33',
+  YES: 'yes',
+  Y: 'Y',
+  ONE: '1',
+  TRUE: 'True',
+  NO: 'No',
+  N: 'n',
+  ZERO: '0',
+  FALSE: 'FALSE',
+  PREFIXED_VALUE: 'Prefixed',
+};

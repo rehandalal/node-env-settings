@@ -1,46 +1,71 @@
 const assert = require('assert');
 const proxyquire = require('proxyquire');
 
-const stubEnv = {
-  STRING: 'Test',
-  INT: '23',
-  NEGATIVE_INT: '-1',
-  FLOAT: '32.33',
-  YES: 'yes',
-  Y: 'Y',
-  ONE: '1',
-  TRUE: 'True',
-  NO: 'No',
-  N: 'n',
-  ZERO: '0',
-  FALSE: 'FALSE',
-};
+import { stubbedEnv } from './fixtures';
 
 const values = proxyquire('../src/values', {
   process: {
-    env: stubEnv,
+    env: stubbedEnv,
   },
 });
 
 describe('values.test.js', () => {
   describe('Value', () => {
     it('works', () => {
-      const v = new values.Value('test', {envName: 'TEST'});
-      assert.deepStrictEqual(v.options, {envName: 'TEST'});
-      assert.deepStrictEqual(v.defaultsTo, 'test');
+      new values.Value();
     });
 
-    describe('.setEmptyOptions()', () => {
-      const v = new values.Value(undefined);
+    it('errors on non-uppercase envName', () => {
+      assert.throws(
+        () => new values.Value(null, { envName: 'envName' }),
+        Error,
+        'envName must be uppercase.',
+      );
 
-      it('sets options that are empty', () => {
-        v.setEmptyOptions({envName: 'ONE'});
-        assert.deepStrictEqual(v.options, {envName: 'ONE'});
+      const v = new values.Value();
+      assert.throws(
+        () => v.options.envName = 'envName',
+        Error,
+        'envName must be uppercase.',
+      );
+    });
+
+    it('errors on non-uppercase envPrefix', () => {
+      assert.throws(
+        () => new values.Value(null, { envPrefix: 'envPrefix' }),
+        Error,
+        'envPrefix must be uppercase.',
+      );
+
+      const v = new values.Value();
+      assert.throws(
+        () => v.options.envPrefix = 'envPrefix',
+        Error,
+        'envPrefix must be uppercase.',
+      );
+    });
+
+    describe('.fullEnvName', () => {
+      it('errors on empty envName', () => {
+        const v = new values.Value();
+        assert.throws(
+          () => v.fullEnvName,
+          Error,
+          'Unable to resolve envName.',
+        );
       });
 
-      it('does not set options that are not empty', () => {
-        v.setEmptyOptions({envName: 'TWO'});
-        assert.deepStrictEqual(v.options, {envName: 'ONE'});
+      it('works with only an envName', () => {
+        const v = new values.Value(null, { envName: 'ENVNAME' });
+        assert.equal(v.fullEnvName, 'ENVNAME');
+      });
+
+      it('works with both an envName and envPrefix', () => {
+        let v = new values.Value(null, { envName: 'ENVNAME', envPrefix: 'PREFIX' });
+        assert.equal(v.fullEnvName, 'PREFIX_ENVNAME');
+
+        v = new values.Value(null, { envName: 'ENVNAME', envPrefix: 'PREFIX_' });
+        assert.equal(v.fullEnvName, 'PREFIX_ENVNAME');
       });
     });
 
@@ -55,24 +80,6 @@ describe('values.test.js', () => {
         assert.deepStrictEqual(v.value, 'Test');
       });
 
-      it('errors on empty envName', () => {
-        const v = newValue();
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'Unable to resolve envName.',
-        );
-      });
-
-      it('errors on non-uppercase envName', () => {
-        const v = newValue('test');
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'test: envName must be uppercase.',
-        );
-      });
-
       it('returns the default when not in the environment', () => {
         const v = newValue('DOES_NOT_EXIST', 'fallback');
         assert.deepStrictEqual(v.value, 'fallback');
@@ -82,9 +89,9 @@ describe('values.test.js', () => {
         const v = newValue('DOES_NOT_EXIST', 'fallback');
         assert.deepStrictEqual(v.value, 'fallback');
 
-        stubEnv.DOES_NOT_EXIST = 'exists now!';
+        stubbedEnv.DOES_NOT_EXIST = 'exists now!';
         assert.deepStrictEqual(v.value, 'fallback');
-        delete stubEnv.DOES_NOT_EXIST; // Clean up
+        delete stubbedEnv.DOES_NOT_EXIST; // Clean up
       });
     });
   });
