@@ -42,12 +42,10 @@ describe('settings.test.js', () => {
     });
 
     it('works for dynamic values with Settings.prefix specified', () => {
-      Settings.prefix = 'PREFIXED';
       const s = new Settings({
         VALUE: new values.Value(),
-      });
+      }, 'PREFIXED');
       assert.deepStrictEqual(s, { VALUE: 'Prefixed' });
-      Settings.prefix = '';
     });
 
     it('works for dynamic values with envName specified', () => {
@@ -59,23 +57,19 @@ describe('settings.test.js', () => {
     });
 
     it('works for dynamic values with envName and Settings.prefix specified', () => {
-      Settings.prefix = 'PREFIXED';
       const s = new Settings({
         STRING: new values.Value(null, { envName: 'VALUE' }),
-      });
+      }, 'PREFIXED');
 
       assert.deepStrictEqual(s, { STRING: 'Prefixed' });
-      Settings.prefix = '';
     });
 
     it('works for dynamic walues with envName, envPrefix and Settings.prefix specified', () => {
-      Settings.prefix = 'FOO';
       const s = new Settings({
         STRING: new values.Value(null, { envName: 'VALUE', envPrefix: 'PREFIXED' }),
-      });
+      }, 'FOO');
 
       assert.deepStrictEqual(s, { STRING: 'Prefixed' });
-      Settings.prefix = '';
     });
 
     it('works for function values that self-reference', () => {
