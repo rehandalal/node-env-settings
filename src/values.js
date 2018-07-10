@@ -160,6 +160,38 @@ export class FloatValue extends Value {
   }
 }
 
-export {
-  process,
-};
+export class DurationValue extends IntegerValue {
+  static SECOND = 1000;
+  static MINUTE = 60 * DurationValue.SECOND;
+  static HOUR = 60 * DurationValue.MINUTE;
+  static DAY = 24 * DurationValue.HOUR;
+
+  toJS(value) {
+    let quantity, unit;
+
+    try {
+      [, quantity, unit] = value.match(/^([0-9]*)([smhd]?)$/i);
+    } catch (err) {
+      throw new ValueError('Cannot interpret value.');
+    }
+
+    // Convert quantity to an integer
+    quantity = super.toJS(quantity);
+
+    // Normalize unit
+    unit = unit.toLowerCase();
+
+    let multiplier = 1;
+    if (unit === 's') {
+      multiplier = DurationValue.SECOND;
+    } else if (unit === 'm') {
+      multiplier = DurationValue.MINUTE;
+    } else if (unit === 'h') {
+      multiplier = DurationValue.HOUR;
+    } else if (unit === 'd') {
+      multiplier = DurationValue.DAY;
+    }
+
+    return quantity * multiplier;
+  }
+}

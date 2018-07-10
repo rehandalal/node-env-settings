@@ -310,4 +310,66 @@ describe('values.test.js', () => {
       });
     });
   });
+
+  describe('DurationValue', () => {
+    it('works', () => {
+      new values.DurationValue();
+    });
+
+    describe('.value', () => {
+      function newValue(envName, defaultsTo) {
+        const v = new values.DurationValue(defaultsTo, {envName});
+        return v;
+      }
+
+      it('returns the default correctly', () => {
+        const v = newValue('DOES_NOT_EXIST', 2 * values.DurationValue.MINUTE);
+        assert.deepStrictEqual(v.value, 120000);
+      });
+
+      it('returns the value if there is no unit', () => {
+        let v = newValue('INT');
+        assert.deepStrictEqual(v.value, 23);
+      });
+
+      it('returns the value if set in seconds', () => {
+        stubbedEnv.DV_SECONDS = '4s';
+        const v = newValue('DV_SECONDS');
+        assert.deepStrictEqual(v.value, 4000);
+        delete stubbedEnv.DV_SECONDS;
+      });
+
+      it('returns the value if set in minutes', () => {
+        stubbedEnv.DV_MINUTES = '1m';
+        const v = newValue('DV_MINUTES');
+        assert.deepStrictEqual(v.value, 60000);
+        delete stubbedEnv.DV_MINUTES;
+      });
+
+      it('returns the value if set in hours', () => {
+        stubbedEnv.DV_HOURS = '1h';
+        const v = newValue('DV_HOURS');
+        assert.deepStrictEqual(v.value, 3600000);
+        delete stubbedEnv.DV_HOURS;
+      });
+
+      it('returns the value if set in days', () => {
+        stubbedEnv.DV_DAYS = '1d';
+        const v = newValue('DV_DAYS');
+        assert.deepStrictEqual(v.value, 86400000);
+        delete stubbedEnv.DV_DAYS;
+      });
+
+      it('errors on badly formatted value', () => {
+        stubbedEnv.DURATION = '20x';
+        const v = newValue('DURATION');
+        assert.throws(
+          () => v.value,
+          values.ValueError,
+          'Cannot interpret value.',
+        );
+        delete stubbedEnv.DURATION;
+      });
+    });
+  });
 });
