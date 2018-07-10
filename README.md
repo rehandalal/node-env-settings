@@ -14,7 +14,7 @@ It was heavily inspired by
 Install node-env-settings:
 
 ```
-npm install env-settings
+npm install node-env-settings
 ```
 
 Create a new `Settings` object to read settings from the environment variables:
@@ -22,7 +22,7 @@ Create a new `Settings` object to read settings from the environment variables:
 ```js
 // settings.js
 
-import { Settings, values } from 'env-settings';
+import { Settings, values } from 'node-env-settings';
 
 Settings.prefix = 'REACT_APP'
 
