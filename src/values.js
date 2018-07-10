@@ -181,9 +181,7 @@ export class DurationValue extends IntegerValue {
       ...minutesUnits,
       ...hoursUnits,
       ...daysUnits,
-    ]
-      .reduce((reduced, current) => `${reduced}|${current}`, '')
-      .slice(1);
+    ].reduce((reduced, current) => `${reduced}|${current}`);
 
     const re = new RegExp(`^([0-9]*)\\s*((?:${unitsPatterns})?)$`, 'i');
 
