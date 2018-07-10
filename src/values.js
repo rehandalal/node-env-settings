@@ -169,8 +169,26 @@ export class DurationValue extends IntegerValue {
   toJS(value) {
     let quantity, unit;
 
+    const millisecondsUnits = ['ms', 'millisecond', 'milliseconds'];
+    const secondsUnits = ['s', 'sec', 'secs', 'second', 'seconds'];
+    const minutesUnits = ['m', 'min', 'mins', 'minute', 'minutes'];
+    const hoursUnits = ['h', 'hr', 'hrs', 'hour', 'hours'];
+    const daysUnits = ['d', 'day', 'days'];
+
+    const unitsPatterns = [
+      ...millisecondsUnits,
+      ...secondsUnits,
+      ...minutesUnits,
+      ...hoursUnits,
+      ...daysUnits,
+    ]
+      .reduce((reduced, current) => `${reduced}|${current}`, '')
+      .slice(1);
+
+    const re = new RegExp(`^([0-9]*)\\s*((?:${unitsPatterns})?)$`, 'i');
+
     try {
-      [, quantity, unit] = value.match(/^([0-9]*)([smhd]?)$/i);
+      [, quantity, unit] = value.match(re);
     } catch (err) {
       throw new ValueError('Cannot interpret value.');
     }
@@ -182,13 +200,13 @@ export class DurationValue extends IntegerValue {
     unit = unit.toLowerCase();
 
     let multiplier = 1;
-    if (unit === 's') {
+    if (secondsUnits.includes(unit)) {
       multiplier = DurationValue.SECOND;
-    } else if (unit === 'm') {
+    } else if (minutesUnits.includes(unit)) {
       multiplier = DurationValue.MINUTE;
-    } else if (unit === 'h') {
+    } else if (hoursUnits.includes(unit)) {
       multiplier = DurationValue.HOUR;
-    } else if (unit === 'd') {
+    } else if (daysUnits.includes(unit)) {
       multiplier = DurationValue.DAY;
     }
 
