@@ -16,6 +16,7 @@ const { default: Settings } = proxyquire('../src/settings', {
 });
 
 function assertSettingsEqual(settingsObject, expected) {
+  assert(settingsObject instanceof Settings);
   assert.deepStrictEqual({ ...settingsObject }, expected);
 }
 
@@ -131,6 +132,60 @@ describe('settings.test.js', () => {
 
       assert.deepStrictEqual(s.COUNT, 1);
       assert.deepStrictEqual(s.COUNT, 1);
+    });
+
+    describe('.assign', () => {
+      it('correctly assigns new settings', () => {
+        const s1 = new Settings({
+          EVALUATED() {
+            return this.STRING;
+          },
+          STRING: new values.Value(),
+        });
+
+        const s2 = new Settings({
+          STRING: new values.Value('', { envName: 'PREFIXED_VALUE' }),
+          FOO: new values.Value('BAR'),
+        });
+
+        const result = Settings.assign(s1, s2);
+
+        assertSettingsEqual(result, {
+          STRING: 'Prefixed',
+          EVALUATED: 'Prefixed',
+          FOO: 'BAR',
+        });
+      });
+
+      it('work for plain objects', () => {
+        const s = new Settings({
+          LOREM: 'ipsum',
+          STRING: new values.Value(),
+        });
+
+        const result = Settings.assign(s, {
+          STRING: 'foo',
+          FOO: 'bar',
+        });
+
+        assertSettingsEqual(result, {
+          LOREM: 'ipsum',
+          STRING: 'foo',
+          FOO: 'bar',
+        });
+      });
+
+      it('retains prefixes correctly', () => {
+        const s = new Settings({
+          VALUE: new values.Value(),
+        }, 'PREFIXED');
+
+        const result = Settings.assign({}, s);
+
+        assertSettingsEqual(result, {
+          VALUE: 'Prefixed',
+        });
+      });
     });
   });
 });
