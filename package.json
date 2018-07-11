@@ -27,16 +27,19 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-preset-stage-0": "^6.24.1",
     "eslint": "^5.0.1",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-mocha": "^5.1.0",
     "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-prettier": "^2.6.2",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
+    "prettier": "^1.13.7",
     "proxyquire": "^2.0.1"
   }
 }
