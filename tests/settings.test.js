@@ -15,14 +15,31 @@ const { default: Settings } = proxyquire('../src/settings', {
   },
 });
 
+function assertSettingsEqual(settingsObject, expected) {
+  assert.deepStrictEqual({ ...settingsObject }, expected);
+}
+
 describe('settings.test.js', () => {
   describe('Settings', () => {
+    it('is an instance of Settings', () => {
+      const s = new Settings();
+      assert(s instanceof Settings);
+    });
+
+    it('is immutable', () => {
+      const s = new Settings();
+      assert.throws(
+        () => s.NEW_SETTING = 'foo',
+        Error,
+      );
+    });
+
     it('works for static values', () => {
       const s = new Settings({
         STATIC_VALUE: 'static',
       });
 
-      assert.deepStrictEqual(s, { STATIC_VALUE: 'static' });
+      assertSettingsEqual(s, { STATIC_VALUE: 'static' });
     });
 
     it('works for default values', () => {
@@ -30,7 +47,7 @@ describe('settings.test.js', () => {
         DOES_NOT_EXIST: new values.Value('fallback'),
       });
 
-      assert.deepStrictEqual(s, { DOES_NOT_EXIST: 'fallback' });
+      assertSettingsEqual(s, { DOES_NOT_EXIST: 'fallback' });
     });
 
     it('works for dynamic values with no envName specified', () => {
@@ -38,14 +55,14 @@ describe('settings.test.js', () => {
         STRING: new values.Value(),
       });
 
-      assert.deepStrictEqual(s, { STRING: 'Test' });
+      assertSettingsEqual(s, { STRING: 'Test' });
     });
 
     it('works for dynamic values with Settings.prefix specified', () => {
       const s = new Settings({
         VALUE: new values.Value(),
       }, 'PREFIXED');
-      assert.deepStrictEqual(s, { VALUE: 'Prefixed' });
+      assertSettingsEqual(s, { VALUE: 'Prefixed' });
     });
 
     it('works for dynamic values with envName specified', () => {
@@ -53,7 +70,7 @@ describe('settings.test.js', () => {
         STRING: new values.Value(null, { envName: 'ONE' }),
       });
 
-      assert.deepStrictEqual(s, { STRING: '1' });
+      assertSettingsEqual(s, { STRING: '1' });
     });
 
     it('works for dynamic values with envName and Settings.prefix specified', () => {
@@ -61,7 +78,7 @@ describe('settings.test.js', () => {
         STRING: new values.Value(null, { envName: 'VALUE' }),
       }, 'PREFIXED');
 
-      assert.deepStrictEqual(s, { STRING: 'Prefixed' });
+      assertSettingsEqual(s, { STRING: 'Prefixed' });
     });
 
     it('works for dynamic walues with envName, envPrefix and Settings.prefix specified', () => {
@@ -69,7 +86,7 @@ describe('settings.test.js', () => {
         STRING: new values.Value(null, { envName: 'VALUE', envPrefix: 'PREFIXED' }),
       }, 'FOO');
 
-      assert.deepStrictEqual(s, { STRING: 'Prefixed' });
+      assertSettingsEqual(s, { STRING: 'Prefixed' });
     });
 
     it('works for function values that self-reference', () => {
@@ -80,7 +97,7 @@ describe('settings.test.js', () => {
         },
       });
 
-      assert.deepStrictEqual(s, {
+      assertSettingsEqual(s, {
         STRING: 'Test',
         EVALUATED: 'Test works!',
       });
@@ -94,7 +111,7 @@ describe('settings.test.js', () => {
         },
       });
 
-      assert.deepStrictEqual(s, {
+      assertSettingsEqual(s, {
         OBJ: {
           staticValue: 'static',
           dynamicValue: 'Test',
@@ -112,8 +129,8 @@ describe('settings.test.js', () => {
         },
       });
 
-      assert.deepStrictEqual(s, { COUNT: 1 });
-      assert.deepStrictEqual(s, { COUNT: 1 });
+      assert.deepStrictEqual(s.COUNT, 1);
+      assert.deepStrictEqual(s.COUNT, 1);
     });
   });
 });

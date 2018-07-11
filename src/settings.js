@@ -1,48 +1,47 @@
 import { isPlainObject } from './helpers';
 import { Value } from './values';
 
-function parseValue(composedSettings, value, envName, envPrefix) {
-  if (typeof value === 'function') {
-    value = value.apply(composedSettings);
-  }
-
-  if (value instanceof Value) {
-    if (value.options.envName === undefined) {
-      value.options.envName = envName;
-    }
-    if (value.options.envPrefix === undefined) {
-      value.options.envPrefix = envPrefix;
-    }
-    value = value.value;
-  } else if (isPlainObject(value)) {
-    Object.entries(value).forEach(([k, v]) => {
-      value[k] = parseValue(composedSettings, v);
-    });
-  }
-
-  return value;
-}
-
 export default class Settings {
-  constructor(settings, prefix) {
-    const composed = {};
+  constructor(settings = {}, prefix) {
     const cache = new Map();
 
-    Object.entries(settings).forEach(([settingKey, settingValue]) => {
-      Object.defineProperty(composed, settingKey, {
+    const parseValue = (value, envName, envPrefix) => {
+      if (typeof value === 'function') {
+        value = value.apply(this);
+      }
+
+      if (value instanceof Value) {
+        if (value.options.envName === undefined) {
+          value.options.envName = envName;
+        }
+        if (value.options.envPrefix === undefined) {
+          value.options.envPrefix = envPrefix;
+        }
+        value = value.value;
+      } else if (isPlainObject(value)) {
+        Object.entries(value).forEach(([k, v]) => {
+          value[k] = parseValue(v);
+        });
+      }
+
+      return value;
+    };
+
+    Object.entries(settings).forEach(([key, value]) => {
+      Object.defineProperty(this, key, {
         enumerable: true,
         get() {
-          if (cache.has(settingKey)) {
-            return cache.get(settingKey);
+          if (cache.has(key)) {
+            return cache.get(key);
           }
 
-          const value = parseValue(composed, settingValue, settingKey, prefix);
-          cache.set(settingKey, value);
-          return value;
+          const parsedValue = parseValue(value, key, prefix);
+          cache.set(key, parsedValue);
+          return parsedValue;
         },
       });
     });
 
-    return composed;
+    Object.freeze(this);
   }
 }
