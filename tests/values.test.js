@@ -310,4 +310,142 @@ describe('values.test.js', () => {
       });
     });
   });
+
+  describe('DurationValue', () => {
+    it('works', () => {
+      new values.DurationValue();
+    });
+
+    describe('.value', () => {
+      function newValue(envName, defaultsTo) {
+        const v = new values.DurationValue(defaultsTo, {envName});
+        return v;
+      }
+
+      it('returns the default correctly', () => {
+        const v = newValue('DOES_NOT_EXIST', 2 * values.DurationValue.MINUTE);
+        assert.deepStrictEqual(v.value, 120000);
+      });
+
+      it('returns the value if there is no unit', () => {
+        const v = newValue('INT');
+        assert.deepStrictEqual(v.value, 23);
+      });
+
+      it('returns the value if set in milliseconds', () => {
+        stubbedEnv.DV_MILLISECONDS = '2ms';
+        let v = newValue('DV_MILLISECONDS');
+        assert.deepStrictEqual(v.value, 2);
+
+        stubbedEnv.DV_MILLISECONDS = '1 millisecond';
+        v = newValue('DV_MILLISECONDS');
+        assert.deepStrictEqual(v.value, 1);
+
+        stubbedEnv.DV_MILLISECONDS = '3 milliseconds';
+        v = newValue('DV_MILLISECONDS');
+        assert.deepStrictEqual(v.value, 3);
+
+        delete stubbedEnv.DV_MILLISECONDS;
+      });
+
+      it('returns the value if set in seconds', () => {
+        stubbedEnv.DV_SECONDS = '2s';
+        let v = newValue('DV_SECONDS');
+        assert.deepStrictEqual(v.value, 2000);
+
+        stubbedEnv.DV_SECONDS = '1 sec';
+        v = newValue('DV_SECONDS');
+        assert.deepStrictEqual(v.value, 1000);
+
+        stubbedEnv.DV_SECONDS = '2 secs';
+        v = newValue('DV_SECONDS');
+        assert.deepStrictEqual(v.value, 2000);
+
+        stubbedEnv.DV_SECONDS = '1 second';
+        v = newValue('DV_SECONDS');
+        assert.deepStrictEqual(v.value, 1000);
+
+        stubbedEnv.DV_SECONDS = '2 seconds';
+        v = newValue('DV_SECONDS');
+        assert.deepStrictEqual(v.value, 2000);
+
+        delete stubbedEnv.DV_SECONDS;
+      });
+
+      it('returns the value if set in minutes', () => {
+        stubbedEnv.DV_MINUTES = '2m';
+        let v = newValue('DV_MINUTES');
+        assert.deepStrictEqual(v.value, 120000);
+
+        stubbedEnv.DV_MINUTES = '1 min';
+        v = newValue('DV_MINUTES');
+        assert.deepStrictEqual(v.value, 60000);
+
+        stubbedEnv.DV_MINUTES = '2 mins';
+        v = newValue('DV_MINUTES');
+        assert.deepStrictEqual(v.value, 120000);
+
+        stubbedEnv.DV_MINUTES = '1 minute';
+        v = newValue('DV_MINUTES');
+        assert.deepStrictEqual(v.value, 60000);
+
+        stubbedEnv.DV_MINUTES = '2 minutes';
+        v = newValue('DV_MINUTES');
+        assert.deepStrictEqual(v.value, 120000);
+
+        delete stubbedEnv.DV_MINUTES;
+      });
+
+      it('returns the value if set in hours', () => {
+        stubbedEnv.DV_HOURS = '2h';
+        let v = newValue('DV_HOURS');
+        assert.deepStrictEqual(v.value, 7200000);
+
+        stubbedEnv.DV_HOURS = '1 hr';
+        v = newValue('DV_HOURS');
+        assert.deepStrictEqual(v.value, 3600000);
+
+        stubbedEnv.DV_HOURS = '2 hrs';
+        v = newValue('DV_HOURS');
+        assert.deepStrictEqual(v.value, 7200000);
+
+        stubbedEnv.DV_HOURS = '1 hour';
+        v = newValue('DV_HOURS');
+        assert.deepStrictEqual(v.value, 3600000);
+
+        stubbedEnv.DV_HOURS = '2 hours';
+        v = newValue('DV_HOURS');
+        assert.deepStrictEqual(v.value, 7200000);
+
+        delete stubbedEnv.DV_HOURS;
+      });
+
+      it('returns the value if set in days', () => {
+        stubbedEnv.DV_DAYS = '2d';
+        let v = newValue('DV_DAYS');
+        assert.deepStrictEqual(v.value, 172800000);
+
+        stubbedEnv.DV_DAYS = '1 day';
+        v = newValue('DV_DAYS');
+        assert.deepStrictEqual(v.value, 86400000);
+
+        stubbedEnv.DV_DAYS = '2 days';
+        v = newValue('DV_DAYS');
+        assert.deepStrictEqual(v.value, 172800000);
+
+        delete stubbedEnv.DV_DAYS;
+      });
+
+      it('errors on badly formatted value', () => {
+        stubbedEnv.DURATION = '20x';
+        const v = newValue('DURATION');
+        assert.throws(
+          () => v.value,
+          values.ValueError,
+          'Cannot interpret value.',
+        );
+        delete stubbedEnv.DURATION;
+      });
+    });
+  });
 });

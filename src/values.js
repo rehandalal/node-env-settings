@@ -160,6 +160,54 @@ export class FloatValue extends Value {
   }
 }
 
-export {
-  process,
-};
+export class DurationValue extends IntegerValue {
+  static SECOND = 1000;
+  static MINUTE = 60 * DurationValue.SECOND;
+  static HOUR = 60 * DurationValue.MINUTE;
+  static DAY = 24 * DurationValue.HOUR;
+
+  toJS(value) {
+    let quantity, unit;
+
+    const millisecondsUnits = ['ms', 'millisecond', 'milliseconds'];
+    const secondsUnits = ['s', 'sec', 'secs', 'second', 'seconds'];
+    const minutesUnits = ['m', 'min', 'mins', 'minute', 'minutes'];
+    const hoursUnits = ['h', 'hr', 'hrs', 'hour', 'hours'];
+    const daysUnits = ['d', 'day', 'days'];
+
+    const unitsPatterns = [
+      ...millisecondsUnits,
+      ...secondsUnits,
+      ...minutesUnits,
+      ...hoursUnits,
+      ...daysUnits,
+    ].reduce((reduced, current) => `${reduced}|${current}`);
+
+    const re = new RegExp(`^([0-9]*)\\s*((?:${unitsPatterns})?)$`, 'i');
+
+    try {
+      [, quantity, unit] = value.match(re);
+    } catch (err) {
+      throw new ValueError('Cannot interpret value.');
+    }
+
+    // Convert quantity to an integer
+    quantity = super.toJS(quantity);
+
+    // Normalize unit
+    unit = unit.toLowerCase();
+
+    let multiplier = 1;
+    if (secondsUnits.includes(unit)) {
+      multiplier = DurationValue.SECOND;
+    } else if (minutesUnits.includes(unit)) {
+      multiplier = DurationValue.MINUTE;
+    } else if (hoursUnits.includes(unit)) {
+      multiplier = DurationValue.HOUR;
+    } else if (daysUnits.includes(unit)) {
+      multiplier = DurationValue.DAY;
+    }
+
+    return quantity * multiplier;
+  }
+}
