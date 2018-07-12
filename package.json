@@ -1,6 +1,6 @@
 {
   "name": "node-env-settings",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Multi-environment configuration made simple",
   "main": "dist/index.js",
   "scripts": {
