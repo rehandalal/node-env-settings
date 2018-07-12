@@ -25,12 +25,10 @@ Create a new `Settings` object to read settings from the environment variables:
 
 import { Settings, values } from 'node-env-settings';
 
-Settings.prefix = 'REACT_APP'
-
 export default new Settings({
   DEBUG: values.BooleanValue(false),
   MY_SETTING: values.Value('default value'),
-});
+}, 'REACT_APP');
 ```
 
 This will attempt to read `REACT_APP_DEBUG` and `REACT_APP_MY_SETTING` from your
