@@ -23,11 +23,7 @@ describe('values.test.js', () => {
       );
 
       const v = new values.Value();
-      assert.throws(
-        () => v.options.envName = 'envName',
-        Error,
-        'envName must be uppercase.',
-      );
+      assert.throws(() => (v.options.envName = 'envName'), Error, 'envName must be uppercase.');
     });
 
     it('errors on non-uppercase envPrefix', () => {
@@ -39,7 +35,7 @@ describe('values.test.js', () => {
 
       const v = new values.Value();
       assert.throws(
-        () => v.options.envPrefix = 'envPrefix',
+        () => (v.options.envPrefix = 'envPrefix'),
         Error,
         'envPrefix must be uppercase.',
       );
@@ -48,11 +44,7 @@ describe('values.test.js', () => {
     describe('.fullEnvName', () => {
       it('errors on empty envName', () => {
         const v = new values.Value();
-        assert.throws(
-          () => v.fullEnvName,
-          Error,
-          'Unable to resolve envName.',
-        );
+        assert.throws(() => v.fullEnvName, Error, 'Unable to resolve envName.');
       });
 
       it('works with only an envName', () => {
@@ -71,7 +63,7 @@ describe('values.test.js', () => {
 
     describe('.value', () => {
       function newValue(envName, defaultsTo) {
-        const v = new values.Value(defaultsTo, {envName});
+        const v = new values.Value(defaultsTo, { envName });
         return v;
       }
 
@@ -111,7 +103,7 @@ describe('values.test.js', () => {
 
     describe('.value', () => {
       function newValue(envName, defaultsTo) {
-        const v = new values.BooleanValue(defaultsTo, {envName});
+        const v = new values.BooleanValue(defaultsTo, { envName });
         return v;
       }
 
@@ -145,11 +137,7 @@ describe('values.test.js', () => {
 
       it('errors on invalid values', () => {
         const v = newValue('STRING', false);
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'Cannot interpret boolean value.',
-        );
+        assert.throws(() => v.value, values.ValueError, 'Cannot interpret boolean value.');
       });
 
       it('returns the default correctly', () => {
@@ -182,7 +170,7 @@ describe('values.test.js', () => {
 
     describe('.value', () => {
       function newValue(envName, defaultsTo) {
-        const v = new values.IntegerValue(defaultsTo, {envName});
+        const v = new values.IntegerValue(defaultsTo, { envName });
         return v;
       }
 
@@ -196,11 +184,7 @@ describe('values.test.js', () => {
 
       it('errors on non-numeric strings', () => {
         const v = newValue('STRING');
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'Cannot interpret value.'
-        );
+        assert.throws(() => v.value, values.ValueError, 'Cannot interpret value.');
       });
 
       it('returns the default correctly', () => {
@@ -226,7 +210,7 @@ describe('values.test.js', () => {
 
     describe('.value', () => {
       function newValue(envName, defaultsTo) {
-        const v = new values.PositiveIntegerValue(defaultsTo, {envName});
+        const v = new values.PositiveIntegerValue(defaultsTo, { envName });
         return v;
       }
 
@@ -240,11 +224,7 @@ describe('values.test.js', () => {
 
       it('errors on negative numeric strings', () => {
         const v = newValue('NEGATIVE_INT');
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'Cannot interpret value.'
-        );
+        assert.throws(() => v.value, values.ValueError, 'Cannot interpret value.');
       });
 
       it('returns the default correctly', () => {
@@ -263,7 +243,7 @@ describe('values.test.js', () => {
 
     it('errors on invalid default value', () => {
       assert.throws(
-        () => new values.FloatValue(1/0),
+        () => new values.FloatValue(1 / 0),
         values.ValueError,
         'Default value must be a finite number.',
       );
@@ -283,7 +263,7 @@ describe('values.test.js', () => {
 
     describe('.value', () => {
       function newValue(envName, defaultsTo) {
-        const v = new values.FloatValue(defaultsTo, {envName});
+        const v = new values.FloatValue(defaultsTo, { envName });
         return v;
       }
 
@@ -297,11 +277,7 @@ describe('values.test.js', () => {
 
       it('errors on non-numeric strings', () => {
         const v = newValue('STRING');
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'Cannot interpret value.'
-        );
+        assert.throws(() => v.value, values.ValueError, 'Cannot interpret value.');
       });
 
       it('returns the default correctly', () => {
@@ -318,7 +294,7 @@ describe('values.test.js', () => {
 
     describe('.value', () => {
       function newValue(envName, defaultsTo) {
-        const v = new values.DurationValue(defaultsTo, {envName});
+        const v = new values.DurationValue(defaultsTo, { envName });
         return v;
       }
 
@@ -439,11 +415,7 @@ describe('values.test.js', () => {
       it('errors on badly formatted value', () => {
         stubbedEnv.DURATION = '20x';
         const v = newValue('DURATION');
-        assert.throws(
-          () => v.value,
-          values.ValueError,
-          'Cannot interpret value.',
-        );
+        assert.throws(() => v.value, values.ValueError, 'Cannot interpret value.');
         delete stubbedEnv.DURATION;
       });
     });

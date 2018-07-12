@@ -29,10 +29,7 @@ describe('settings.test.js', () => {
 
     it('is immutable', () => {
       const s = new Settings();
-      assert.throws(
-        () => s.NEW_SETTING = 'foo',
-        Error,
-      );
+      assert.throws(() => (s.NEW_SETTING = 'foo'), Error);
     });
 
     it('works for static values', () => {
@@ -60,9 +57,12 @@ describe('settings.test.js', () => {
     });
 
     it('works for dynamic values with Settings.prefix specified', () => {
-      const s = new Settings({
-        VALUE: new values.Value(),
-      }, 'PREFIXED');
+      const s = new Settings(
+        {
+          VALUE: new values.Value(),
+        },
+        'PREFIXED',
+      );
       assertSettingsEqual(s, { VALUE: 'Prefixed' });
     });
 
@@ -75,17 +75,23 @@ describe('settings.test.js', () => {
     });
 
     it('works for dynamic values with envName and Settings.prefix specified', () => {
-      const s = new Settings({
-        STRING: new values.Value(null, { envName: 'VALUE' }),
-      }, 'PREFIXED');
+      const s = new Settings(
+        {
+          STRING: new values.Value(null, { envName: 'VALUE' }),
+        },
+        'PREFIXED',
+      );
 
       assertSettingsEqual(s, { STRING: 'Prefixed' });
     });
 
     it('works for dynamic walues with envName, envPrefix and Settings.prefix specified', () => {
-      const s = new Settings({
-        STRING: new values.Value(null, { envName: 'VALUE', envPrefix: 'PREFIXED' }),
-      }, 'FOO');
+      const s = new Settings(
+        {
+          STRING: new values.Value(null, { envName: 'VALUE', envPrefix: 'PREFIXED' }),
+        },
+        'FOO',
+      );
 
       assertSettingsEqual(s, { STRING: 'Prefixed' });
     });
@@ -176,9 +182,12 @@ describe('settings.test.js', () => {
       });
 
       it('retains prefixes correctly', () => {
-        const s = new Settings({
-          VALUE: new values.Value(),
-        }, 'PREFIXED');
+        const s = new Settings(
+          {
+            VALUE: new values.Value(),
+          },
+          'PREFIXED',
+        );
 
         const result = Settings.merge({}, s);
 

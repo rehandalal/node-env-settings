@@ -17,8 +17,8 @@ export default class Settings {
             return Settings.toJS(arg);
           }
           return arg;
-        })
-      )
+        }),
+      ),
     );
   }
 

@@ -15,7 +15,7 @@ export class Value {
         get: () => {
           return _privateOptions[key];
         },
-        set: (value) => {
+        set: value => {
           validateUpperCase(value, key);
           _privateOptions[key] = value;
         },
