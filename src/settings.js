@@ -1,19 +1,20 @@
 import { isPlainObject } from './helpers';
 import { Value } from './values';
 
+/** A class representing a number of static or dynamic settings. */
 export default class Settings {
-  static assign(...args) {
+  /**
+   * Returns a new Settings object with the other settings merged in from right to left.
+   *
+   * @param {...(Object|Settings)}
+   * @returns {Settings}
+   */
+  static merge(...args) {
     return new Settings(
       Object.assign(
         ...args.map(arg => {
           if (arg instanceof Settings) {
-            const settings = arg._settings;
-            Object.entries(settings).forEach(([key, value]) => {
-              if (value instanceof Value && value.options.envPrefix === undefined) {
-                settings[key].options.envPrefix = arg._prefix;
-              }
-            });
-            return settings;
+            return Settings.toJS(arg);
           }
           return arg;
         })
@@ -21,6 +22,31 @@ export default class Settings {
     );
   }
 
+  /**
+   * Converts a Settings object into a plain javascript object without evaluating the values.
+   *
+   * It will assign the Settings object's prefix to all the first-descendant Value objects that
+   * do not already have a prefix assigned.
+   *
+   * @param {Settings} obj The Settings object to be converted.
+   * @returns {Object}
+   */
+  static toJS(obj) {
+    const settings = obj._settings;
+    Object.entries(settings).forEach(([key, value]) => {
+      if (value instanceof Value && value.options.envPrefix === undefined) {
+        settings[key].options.envPrefix = obj._prefix;
+      }
+    });
+    return settings;
+  }
+
+  /**
+   * Create an immutable Settings object.
+   *
+   * @param {Object} [settings={}]
+   * @param {String} [prefix] The default prefix to use for first-descendant Value objects
+   */
   constructor(settings = {}, prefix) {
     const cache = new Map();
 
@@ -28,9 +54,11 @@ export default class Settings {
     Object.defineProperties(this, {
       _settings: {
         value: { ...settings },
+        enumerable: false,
       },
       _prefix: {
         value: prefix,
+        enumerable: false,
       },
     });
 
@@ -64,7 +92,7 @@ export default class Settings {
             return cache.get(key);
           }
 
-          const evaluatedValue = evaluate(value, key, prefix);
+          const evaluatedValue = evaluate(value, key);
           cache.set(key, evaluatedValue);
           return evaluatedValue;
         },

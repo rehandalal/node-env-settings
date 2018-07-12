@@ -134,8 +134,8 @@ describe('settings.test.js', () => {
       assert.deepStrictEqual(s.COUNT, 1);
     });
 
-    describe('.assign', () => {
-      it('correctly assigns new settings', () => {
+    describe('.merge', () => {
+      it('correctly merges new settings', () => {
         const s1 = new Settings({
           EVALUATED() {
             return this.STRING;
@@ -148,7 +148,7 @@ describe('settings.test.js', () => {
           FOO: new values.Value('BAR'),
         });
 
-        const result = Settings.assign(s1, s2);
+        const result = Settings.merge(s1, s2);
 
         assertSettingsEqual(result, {
           STRING: 'Prefixed',
@@ -163,7 +163,7 @@ describe('settings.test.js', () => {
           STRING: new values.Value(),
         });
 
-        const result = Settings.assign(s, {
+        const result = Settings.merge(s, {
           STRING: 'foo',
           FOO: 'bar',
         });
@@ -180,7 +180,7 @@ describe('settings.test.js', () => {
           VALUE: new values.Value(),
         }, 'PREFIXED');
 
-        const result = Settings.assign({}, s);
+        const result = Settings.merge({}, s);
 
         assertSettingsEqual(result, {
           VALUE: 'Prefixed',
