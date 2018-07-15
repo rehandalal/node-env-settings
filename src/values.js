@@ -2,7 +2,14 @@ import * as process from 'process';
 
 import { validateUpperCase } from './helpers';
 
-export class ValueError extends Error {}
+export class ValueError extends Error {
+  /* istanbul ignore next */
+  constructor(...args) {
+    super(...args);
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, ValueError);
+  }
+}
 
 export class Value {
   constructor(defaultsTo, options = {}) {
@@ -129,6 +136,7 @@ export class IntegerValue extends Value {
 
 export class PositiveIntegerValue extends IntegerValue {
   validateDefaultsTo(value) {
+    /* istanbul ignore next */
     super.validateDefaultsTo(value);
     if (value < 0) {
       throw new ValueError('Default value must be >= 0.');
@@ -136,6 +144,7 @@ export class PositiveIntegerValue extends IntegerValue {
   }
 
   toJS(value) {
+    /* istanbul ignore next */
     const intValue = super.toJS(value);
     if (intValue < 0) {
       throw new ValueError('Cannot interpret value.');
@@ -192,6 +201,7 @@ export class DurationValue extends IntegerValue {
     }
 
     // Convert quantity to an integer
+    /* istanbul ignore next */
     quantity = super.toJS(quantity);
 
     // Normalize unit

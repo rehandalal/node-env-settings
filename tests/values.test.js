@@ -196,7 +196,7 @@ describe('values.test.js', () => {
 
   describe('PositiveIntegerValue', () => {
     it('works', () => {
-      new values.PositiveIntegerValue();
+      new values.PositiveIntegerValue(undefined);
       new values.PositiveIntegerValue(2);
     });
 
@@ -204,7 +204,7 @@ describe('values.test.js', () => {
       assert.throws(
         () => new values.PositiveIntegerValue(-10),
         values.ValueError,
-        'Default value must be a positive integer.',
+        'Default value must be >= 0.',
       );
     });
 
