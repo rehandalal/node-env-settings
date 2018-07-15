@@ -1,7 +1,3 @@
-.idea
-.node-version
-.npmrc
-.nyc_output/
-*.tgz
-yarn.lock*
-yarn-error.log*
+*
+!dist/*
+!package.json
